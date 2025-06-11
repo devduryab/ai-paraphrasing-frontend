@@ -10,19 +10,21 @@ import Link from "next/link";
 interface LoginFormData {
   email: string;
   password: string;
-} 
+}
 
 export default function LoginPage() {
+
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
   });
+
   const [showPassword, setShowPassword] = useState(false);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const { isLoading, error, isAuthenticated, user } = useAppSelector(
+  const { isLoading, error, isAuthenticated, user } = useAppSelector(       
     (state) => state.auth
   );
 
