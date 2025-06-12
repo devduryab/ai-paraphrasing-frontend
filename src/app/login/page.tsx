@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Lock, Mail, GraduationCap } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { loginUser, clearError } from "../../store/slices/authSlice";
+import { loginUser, clearError, loadAuthFromStorage } from "../../store/slices/authSlice";
 import Link from "next/link";
 
 interface LoginFormData {
@@ -13,7 +13,6 @@ interface LoginFormData {
 }
 
 export default function LoginPage() {
-
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -24,9 +23,14 @@ export default function LoginPage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const { isLoading, error, isAuthenticated, user } = useAppSelector(       
+  const { isLoading, error, isAuthenticated, user } = useAppSelector(
     (state) => state.auth
   );
+
+  // Load auth from storage on component mount
+  useEffect(() => {
+    dispatch(loadAuthFromStorage());
+  }, [dispatch]);
 
   // Clear any previous errors when component mounts
   useEffect(() => {
@@ -41,7 +45,17 @@ export default function LoginPage() {
         faculty: "/faculty/dashboard",
         super_admin: "/admin/dashboard",
       };
-      router.push(roleBasedRoutes[user.role]);
+      
+      console.log("User role:", user.role); // Debug log
+      console.log("Available routes:", roleBasedRoutes); // Debug log
+      
+      const route = roleBasedRoutes[user.role];
+      if (route) {
+        console.log("Redirecting to:", route); // Debug log
+        router.push(route);
+      } else {
+        console.error("No route found for role:", user.role);
+      }
     }
   }, [isAuthenticated, user, router]);
 
@@ -49,8 +63,11 @@ export default function LoginPage() {
     e.preventDefault();
     dispatch(clearError());
 
+    console.log("Attempting login with:", formData.email); // Debug log
+
     try {
-      await dispatch(loginUser(formData)).unwrap();
+      const result = await dispatch(loginUser(formData)).unwrap();
+      console.log("Login successful:", result); // Debug log
       // Redirect will be handled by useEffect above
     } catch (error) {
       // Error is already handled by the rejected case in the slice
@@ -87,6 +104,13 @@ export default function LoginPage() {
 
         {/* Login Form */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
+          {/* Debug Info */}
+          <div className="mb-4 p-2 bg-gray-100 rounded text-xs text-black">
+            <p>Backend URL: {process.env.NEXT_PUBLIC_BACKEND_URL}</p>
+            <p>Authenticated: {isAuthenticated ? "Yes" : "No"}</p>
+            <p>User Role: {user?.role || "None"}</p>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Input */}
             <div>

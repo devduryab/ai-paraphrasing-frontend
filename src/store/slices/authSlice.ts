@@ -1,10 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export interface User {
-  id: string;
+  _id: string; // Backend uses _id, not id
   email: string;
-  name: string;
   role: "student" | "faculty" | "super_admin";
+  profile: {
+    firstName: string;
+    lastName: string;
+  };
   isApproved?: boolean;
   avatar?: string;
 }
@@ -17,12 +20,47 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
+// Helper functions for localStorage
+const getTokenFromStorage = (): string | null => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("token");
+  }
+  return null;
+};
+
+const getUserFromStorage = (): User | null => {
+  if (typeof window !== "undefined") {
+    const user = localStorage.getItem("user");
+    return user ? JSON.parse(user) : null;
+  }
+  return null;
+};
+
+const setTokenInStorage = (token: string) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("token", token);
+  }
+};
+
+const setUserInStorage = (user: User) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("user", JSON.stringify(user));
+  }
+};
+
+const clearStorage = () => {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+  }
+};
+
 const initialState: AuthState = {
-  user: null,
-  token: null,
+  user: getUserFromStorage(),
+  token: getTokenFromStorage(),
   isLoading: false,
   error: null,
-  isAuthenticated: false,
+  isAuthenticated: !!getTokenFromStorage(),
 };
 
 // Async thunk for login
@@ -50,7 +88,15 @@ export const loginUser = createAsyncThunk(
         return rejectWithValue(data.message || "Login failed");
       }
 
-      return data;
+      // Store in localStorage
+      setTokenInStorage(data.accessToken); // Backend returns accessToken
+      setUserInStorage(data.user);
+
+      return {
+        user: data.user,
+        token: data.accessToken, // Map accessToken to token
+        refreshToken: data.refreshToken,
+      };
     } catch (error: any) {
       return rejectWithValue(error.message || "Network error");
     }
@@ -76,6 +122,9 @@ export const verifyToken = createAsyncThunk(
       if (!response.ok) {
         return rejectWithValue(data.message || "Token verification failed");
       }
+
+      // Update localStorage
+      setUserInStorage(data.user);
 
       return data;
     } catch (error: any) {
@@ -103,6 +152,9 @@ export const logoutUser = createAsyncThunk(
         console.error("Logout API call failed:", error);
       }
     }
+
+    // Clear localStorage
+    clearStorage();
   }
 );
 
@@ -118,12 +170,25 @@ const authSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
       state.error = null;
+      clearStorage();
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
       state.error = null;
+      clearStorage();
+    },
+    // Add action to load auth from storage
+    loadAuthFromStorage: (state) => {
+      const token = getTokenFromStorage();
+      const user = getUserFromStorage();
+
+      if (token && user) {
+        state.token = token;
+        state.user = user;
+        state.isAuthenticated = true;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -144,6 +209,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
         state.isAuthenticated = false;
+        clearStorage();
       })
       // Token verification cases
       .addCase(verifyToken.pending, (state) => {
@@ -159,6 +225,7 @@ const authSlice = createSlice({
         state.user = null;
         state.token = null;
         state.isAuthenticated = false;
+        clearStorage();
       })
       // Logout cases
       .addCase(logoutUser.fulfilled, (state) => {
@@ -170,5 +237,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, resetAuth, logout } = authSlice.actions;
+export const { clearError, resetAuth, logout, loadAuthFromStorage } =
+  authSlice.actions;
 export default authSlice.reducer;
