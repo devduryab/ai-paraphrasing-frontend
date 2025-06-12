@@ -16,7 +16,7 @@ export default function AdminDashboard() {
             Super Admin Dashboard
           </h1>
           <p className="text-gray-600">
-            Welcome back, {user?.name || "Admin"}! Here’s a quick overview of your system.
+            Welcome back, {user?.profile.firstName || "Admin"}! Here’s a quick overview of your system.
           </p>
           <LogoutButton />
         </div>
