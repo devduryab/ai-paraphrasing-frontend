@@ -59,7 +59,7 @@ export default function DashboardWrapper({
 
   return (
     <DashboardLayout
-      userRole={user.role as "student" | "faculty" | "super_admin"}
+      userRole={user.role as "student" | "faculty" | "admin"}
       pageTitle={pageTitle}
       pageSubtitle={pageSubtitle}
       user={{

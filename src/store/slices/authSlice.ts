@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 export interface User {
   _id: string; // Backend uses _id, not id
   email: string;
-  role: "student" | "faculty" | "super_admin";
+  role: "student" | "faculty" | "admin";
   profile: {
     firstName: string;
     lastName: string;
@@ -94,7 +94,7 @@ export const loginUser = createAsyncThunk(
 
       return {
         user: data.user,
-        token: data.accessToken, // Map accessToken to token
+        token: data.accessToken || data.token, // Map accessToken to token
         refreshToken: data.refreshToken,
       };
     } catch (error: any) {
@@ -184,10 +184,19 @@ const authSlice = createSlice({
       const token = getTokenFromStorage();
       const user = getUserFromStorage();
 
+      console.log("Loading from storage - Token:", token); // Debug log
+      console.log("Loading from storage - User:", user); // Debug log
+
       if (token && user) {
         state.token = token;
         state.user = user;
         state.isAuthenticated = true;
+      } else {
+        // Clear everything if either token or user is missing
+        state.token = null;
+        state.user = null;
+        state.isAuthenticated = false;
+        clearStorage();
       }
     },
   },
@@ -204,6 +213,9 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         state.isAuthenticated = true;
         state.error = null;
+
+        setTokenInStorage(action.payload.token);
+        setUserInStorage(action.payload.user);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;

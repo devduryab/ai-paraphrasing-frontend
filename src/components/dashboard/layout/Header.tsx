@@ -1,7 +1,14 @@
 "use client";
 
 import React from "react";
-import { Bell, Search, Filter, Download, ChevronDown } from "lucide-react";
+import {
+  Bell,
+  Search,
+  Filter,
+  Download,
+  ChevronDown,
+  LogOut,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,6 +19,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { HeaderProps } from "@/interfaces/dashboard/dashboardInterface";
+import { useAppDispatch } from "@/store/hooks";
+import { useRouter } from "next/navigation";
+import { logout } from "@/store/slices/authSlice";
 
 const Header: React.FC<HeaderProps> = ({
   title,
@@ -20,8 +30,16 @@ const Header: React.FC<HeaderProps> = ({
   showExport = true,
   user,
 }) => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    router.push("/login");
+  };
+
   return (
-    <div className="bg-white border-b border-gray-200 px-6 py-4">
+    <div className="bg-white border-b border-gray-200 px-6 py-3 ">
       <div className="flex items-center justify-between">
         {/* Left side - Title */}
         <div>
@@ -83,6 +101,16 @@ const Header: React.FC<HeaderProps> = ({
             </Badge>
           </Button>
 
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative"
+            onClick={handleLogout}
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
+
           {/* User Profile */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -105,7 +133,8 @@ const Header: React.FC<HeaderProps> = ({
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Help</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">
+              <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
+                <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>

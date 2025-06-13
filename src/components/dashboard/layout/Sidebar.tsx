@@ -10,7 +10,6 @@ import {
   MessageSquare,
   TrendingUp,
   Target,
-  Globe,
   Settings,
   HelpCircle,
   ChevronDown,
@@ -29,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
     {
       icon: BarChart3,
       label: "Dashboard",
-      href: `/${userRole}/dashboard`,
+      href: `/${userRole === 'super_admin' ? 'admin' : userRole}/dashboard`,
     },
   ];
 
@@ -57,16 +56,17 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
     ],
     super_admin: [
       { icon: Users, label: "Users", href: "/admin/users" },
-      { icon: MessageSquare, label: "System", href: "/admin/system", badge: 2 },
-      { icon: TrendingUp, label: "Analytics", href: "/admin/analytics" },
-      { icon: Target, label: "Reports", href: "/admin/reports" },
-      { icon: Globe, label: "Settings", href: "/admin/settings" },
+      // { icon: MessageSquare, label: "System", href: "/admin/system", badge: 2 },
+      // { icon: TrendingUp, label: "Analytics", href: "/admin/analytics" },
+      // { icon: Target, label: "Reports", href: "/admin/reports" },
+      // { icon: Globe, label: "Settings", href: "/admin/settings" },
+      // { icon: MessageSquare, label: "System", href: "/admin/system", badge: 2 },
     ],
   };
 
   const settingsItems: SidebarItem[] = [
-    { icon: Settings, label: "Settings", href: `/${userRole}/settings` },
-    { icon: HelpCircle, label: "Help Center", href: `/${userRole}/help` },
+    { icon: Settings, label: "Settings", href: `/${userRole === 'super_admin' ? 'admin' : userRole}/settings` },
+    { icon: HelpCircle, label: "Help Center",  href: `/${userRole === 'super_admin' ? 'admin' : userRole}/help` },
   ];
 
   const navItems = [
