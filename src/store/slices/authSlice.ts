@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 export interface User {
   _id: string; // Backend uses _id, not id
   email: string;
-  role: "student" | "faculty" | "admin";
+  role: "student" | "faculty" | "super_admin";
   profile: {
     firstName: string;
     lastName: string;
