@@ -15,8 +15,7 @@ export default function FacultyDashboard() {
       requiredRole="faculty"
       pageTitle="Faculty Dashboard"
       pageSubtitle="Manage your students and assignments."
-      showFilters={false}
-      showExport={false}
+     
     >
       <DashboardContent userRole="faculty" />
     </DashboardWrapper>

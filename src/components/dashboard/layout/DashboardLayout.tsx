@@ -11,8 +11,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   pageTitle,
   pageSubtitle,
   user,
-  showFilters = true,
-  showExport = true,
 }) => {
   return (
     <div className="flex h-screen bg-gray-50">
@@ -25,8 +23,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <Header
           title={pageTitle}
           subtitle={pageSubtitle}
-          showFilters={showFilters}
-          showExport={showExport}
           user={user}
         />
 

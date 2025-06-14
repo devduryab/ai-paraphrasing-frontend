@@ -11,8 +11,6 @@ export default function DashboardWrapper({
   requiredRole,
   pageTitle,
   pageSubtitle,
-  showFilters = true,
-  showExport = true,
 }: DashboardWrapperProps) {
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const router = useRouter();
@@ -67,8 +65,6 @@ export default function DashboardWrapper({
         role: user.role,
         avatar: user.avatar,
       }}
-      showFilters={showFilters}
-      showExport={showExport}
     >
       {children}
     </DashboardLayout>

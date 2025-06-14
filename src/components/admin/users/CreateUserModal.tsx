@@ -59,22 +59,51 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
   };
 
   const generatePassword = () => {
-    const chars =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%";
+    const lowerCase = "abcdefghijklmnopqrstuvwxyz";
+    const upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const numbers = "0123456789";
+    const specials = "!@#$%^&*"; // Use only allowed special chars
+
     let password = "";
-    for (let i = 0; i < 12; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length));
+
+    // Ensure at least one character from each required type
+    password += lowerCase.charAt(Math.floor(Math.random() * lowerCase.length));
+    password += upperCase.charAt(Math.floor(Math.random() * upperCase.length));
+    password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+    password += specials.charAt(Math.floor(Math.random() * specials.length));
+
+    // Fill the rest randomly
+    const allChars = lowerCase + upperCase + numbers + specials;
+    for (let i = 4; i < 12; i++) {
+      password += allChars.charAt(Math.floor(Math.random() * allChars.length));
     }
+
+    // Shuffle the password
+    password = password
+      .split("")
+      .sort(() => 0.5 - Math.random())
+      .join("");
+
     setFormData((prev) => ({ ...prev, password }));
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
     try {
-      await userService.createUser(formData);
+      // Filter out empty phone number
+      const submitData = {
+        ...formData,
+        profile: {
+          ...formData.profile,
+          ...(formData.profile.phone && formData.profile.phone.trim() !== ""
+            ? { phone: formData.profile.phone }
+            : {}), // Don't include phone if empty
+        },
+      };
+
+      await userService.createUser(submitData);
       onUserCreated();
       onClose();
       resetForm();

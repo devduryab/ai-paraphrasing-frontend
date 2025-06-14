@@ -20,8 +20,7 @@ export default function AdminDashboard() {
       requiredRole="super_admin"
       pageTitle="Admin Dashboard"
       pageSubtitle="Manage your application settings and user data"
-      showFilters={true}
-      showExport={true}
+      
     >
       <DashboardContent userRole="super_admin" />
     </DashboardWrapper>

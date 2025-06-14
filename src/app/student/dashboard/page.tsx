@@ -15,8 +15,7 @@ export default function StudentDashboard() {
       requiredRole="student"
       pageTitle="Student Dashboard"
       pageSubtitle="Track your assignments and progress."
-      showFilters={false}
-      showExport={false}
+
     >
       <DashboardContent userRole="student" />
     </DashboardWrapper>
