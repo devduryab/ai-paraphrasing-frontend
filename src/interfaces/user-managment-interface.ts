@@ -63,3 +63,15 @@ export interface GetUsersResponse {
 export interface UpdateUserResponse {
   user: UserListItem;
 }
+
+export interface UpdateUserData {
+  email?: string;
+  role?: 'faculty' | 'student';
+  profile?: {
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+  };
+  assignedCourses?: string[];
+  status?: 'active' | 'inactive' | 'suspended' | 'pending';
+}

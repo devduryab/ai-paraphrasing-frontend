@@ -6,6 +6,7 @@ import {
   UpdateUserResponse,
   UserListItem,
   UsersResponse,
+  UpdateUserData,
 } from "@/interfaces/user-managment-interface";
 
 class UserManagementService {
@@ -21,9 +22,11 @@ class UserManagementService {
 
   private getAuthHeaders() {
     const token = localStorage.getItem("token");
-     if (!token || token === 'undefined') {
-    throw new Error("No authentication token found. Please login again.");
-  }
+    
+    if (!token || token === 'undefined') {
+      throw new Error("No authentication token found. Please login again.");
+    }
+    
     return {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -48,17 +51,15 @@ class UserManagementService {
   }
 
   // Get all users with pagination and filters
-  async getUsers(
-    params: {
-      page?: number;
-      limit?: number;
-      role?: "faculty" | "student";
-      status?: string;
-      search?: string;
-    } = {}
-  ): Promise<UsersResponse> {
+  async getUsers(params: {
+    page?: number;
+    limit?: number;
+    role?: "faculty" | "student";
+    status?: string;
+    search?: string;
+  } = {}): Promise<UsersResponse> {
     const queryParams = new URLSearchParams();
-
+    
     if (params.page) queryParams.set("page", params.page.toString());
     if (params.limit) queryParams.set("limit", params.limit.toString());
     if (params.role) queryParams.set("role", params.role);
@@ -82,6 +83,38 @@ class UserManagementService {
       users: data.data!.users,
       pagination: data.data!.pagination,
     };
+  }
+
+  // Get single user by ID
+  async getUserById(userId: string): Promise<UserListItem> {
+    const response = await fetch(`${this.baseUrl}/api/auth/users/${userId}`, {
+      headers: this.getAuthHeaders(),
+    });
+
+    const data = (await response.json()) as ApiResponse<{ user: UserListItem }>;
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to fetch user");
+    }
+
+    return data.data!.user;
+  }
+
+  // Update user details
+  async updateUser(userId: string, userData: UpdateUserData): Promise<{ user: UserListItem }> {
+    const response = await fetch(`${this.baseUrl}/api/auth/users/${userId}`, {
+      method: "PUT",
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify(userData),
+    });
+
+    const data = (await response.json()) as ApiResponse<UpdateUserResponse>;
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to update user");
+    }
+
+    return data.data!;
   }
 
   // Update user status
