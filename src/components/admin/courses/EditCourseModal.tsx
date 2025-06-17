@@ -22,6 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Course, FacultyMember, UpdateCourseData } from "@/interfaces/course/course-interface";
 import CourseService from "@/services/course-management-services";
+import { cn } from "@/lib/utils";
 
 
 interface EditCourseModalProps {
@@ -161,7 +162,7 @@ const EditCourseModal: React.FC<EditCourseModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className={cn("!max-w-[40vw] !w-[90vw] max-h-[85vh] overflow-y-auto")}>
         <DialogHeader>
           <DialogTitle>Edit Course</DialogTitle>
         </DialogHeader>

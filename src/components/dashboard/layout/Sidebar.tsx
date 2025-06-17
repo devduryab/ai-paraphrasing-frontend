@@ -36,7 +36,8 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
   // Role-specific navigation items
   const roleSpecificItems: Record<string, SidebarItem[]> = {
     student: [
-      { icon: Users, label: "Assignments", href: "/student/assignments" },
+      // { icon: Users, label: "Assignments", href: "/student/assignments" },
+      { icon: BookOpen, label: "Course Registration", href: "/student/courses" },
       {
         icon: MessageSquare,
         label: "Submissions",

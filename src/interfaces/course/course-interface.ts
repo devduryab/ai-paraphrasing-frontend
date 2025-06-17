@@ -28,6 +28,7 @@ export interface Student {
   profile: {
     firstName: string;
     lastName: string;
+    phone: number
   };
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +15,9 @@ import { X, Eye, EyeOff, Plus } from "lucide-react";
 import { CreateUserModalProps } from "@/interfaces/Admin/AdminInterfaces";
 import { CreateUserData } from "@/interfaces/user-managment-interface";
 import UserManagementService from "@/services/user-managment-services";
+import { Course } from "@/interfaces/course/course-interface";
+import CourseService from "@/services/course-management-services";
+
 
 const CreateUserModal: React.FC<CreateUserModalProps> = ({
   isOpen,
@@ -36,8 +39,12 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [availableCourses, setAvailableCourses] = useState<Course[]>([]);
+  const [fetchingCourses, setFetchingCourses] = useState(false);
+  const [selectedCourseIds, setSelectedCourseIds] = useState<string[]>([]);
 
   const userService = UserManagementService.getInstance();
+  const courseService = CourseService.getInstance();
 
   const handleInputChange = (field: string, value: string) => {
     if (field.startsWith("profile.")) {
@@ -116,6 +123,56 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
     }
   };
 
+  const fetchAvailableCourses = async () => {
+    try {
+      setFetchingCourses(true);
+      const courses = await courseService.getAllCourses({ status: "active" });
+      setAvailableCourses(courses);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+    } finally {
+      setFetchingCourses(false);
+    }
+  };
+
+  const handleCourseSelect = (courseId: string) => {
+    if (!selectedCourseIds.includes(courseId)) {
+      const newSelection = [...selectedCourseIds, courseId];
+      setSelectedCourseIds(newSelection);
+      setFormData((prev) => ({
+        ...prev,
+        assignedCourses: newSelection,
+      }));
+    }
+  };
+
+  const removeCourse = (courseId: string) => {
+    const newSelection = selectedCourseIds.filter((id) => id !== courseId);
+    setSelectedCourseIds(newSelection);
+    setFormData((prev) => ({
+      ...prev,
+      assignedCourses: newSelection,
+    }));
+  };
+
+  const getSelectedCourses = () => {
+    return availableCourses.filter((course) =>
+      selectedCourseIds.includes(course._id)
+    );
+  };
+
+  const getAvailableCoursesForDropdown = () => {
+    return availableCourses.filter(
+      (course) => !selectedCourseIds.includes(course._id)
+    );
+  };
+
+  useEffect(() => {
+    if (isOpen && formData.role === "faculty") {
+      fetchAvailableCourses();
+    }
+  }, [isOpen, formData.role]);
+
   const resetForm = () => {
     setFormData({
       email: "",
@@ -128,6 +185,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
       },
       assignedCourses: [],
     });
+    setSelectedCourseIds([]);
     setError("");
     setShowPassword(false);
   };
@@ -285,16 +343,65 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
             </div>
 
             {/* Course Assignment (Faculty only) */}
+            {/* Course Assignment (Faculty only) */}
             {formData.role === "faculty" && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Assigned Courses
                 </label>
-                <div className="border border-gray-200 rounded-md p-3 min-h-[60px]">
-                  <p className="text-sm text-gray-500">
-                    Course assignment will be available after creating courses.
-                  </p>
-                </div>
+
+                {/* Selected Courses */}
+                {selectedCourseIds.length > 0 && (
+                  <div className="mb-3 space-y-2">
+                    <p className="text-sm text-gray-600">Selected Courses:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {getSelectedCourses().map((course) => (
+                        <div
+                          key={course._id}
+                          className="flex items-center gap-2 bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-sm"
+                        >
+                          {course.name} ({course.courseId})
+                          <button
+                            type="button"
+                            onClick={() => removeCourse(course._id)}
+                            className="hover:text-red-600"
+                            disabled={isLoading}
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Course Dropdown */}
+                <Select
+                  onValueChange={handleCourseSelect}
+                  disabled={isLoading || fetchingCourses}
+                >
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={
+                        fetchingCourses
+                          ? "Loading courses..."
+                          : getAvailableCoursesForDropdown().length === 0
+                          ? "No more courses available"
+                          : "Select courses to assign"
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getAvailableCoursesForDropdown().map((course) => (
+                      <SelectItem key={course._id} value={course._id}>
+                        {course.name} ({course.courseId})
+                        <span className="text-gray-500 ml-2">
+                          - {course.enrolledCount}/{course.maxSlots} students
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             )}
 

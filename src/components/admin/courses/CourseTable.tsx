@@ -26,6 +26,7 @@ import { Course } from "@/interfaces/course/course-interface";
 import CourseService from "@/services/course-management-services";
 import CreateCourseModal from "./CreateCourseModal";
 import EditCourseModal from "./EditCourseModal";
+import CourseStudentsModal from "./CourseStudentModal";
 
 const CoursesTable: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -35,6 +36,7 @@ const CoursesTable: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [showStudentsModal, setShowStudentsModal] = useState(false);
 
   const courseService = CourseService.getInstance();
 
@@ -217,8 +219,38 @@ const CoursesTable: React.FC = () => {
                       </span>
                     </TableCell>
                     <TableCell>{getStatusBadge(course.status)}</TableCell>
+                    {/* <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditCourse(course)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteCourse(course._id)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell> */}
                     <TableCell>
                       <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedCourse(course);
+                            setShowStudentsModal(true);
+                          }}
+                          title="View Students"
+                        >
+                          <Users className="w-4 h-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -260,6 +292,18 @@ const CoursesTable: React.FC = () => {
           }}
           onSuccess={fetchCourses}
           course={selectedCourse}
+        />
+      )}
+
+      {selectedCourse && (
+        <CourseStudentsModal
+          isOpen={showStudentsModal}
+          onClose={() => {
+            setShowStudentsModal(false);
+            setSelectedCourse(null);
+          }}
+          course={selectedCourse}
+          onStudentRemoved={fetchCourses}
         />
       )}
     </div>

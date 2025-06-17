@@ -19,7 +19,6 @@ import { Course } from "@/interfaces/course/course-interface";
 import CourseService from "@/services/course-management-services";
 import CourseDetailsModal from "./CourseDetailsModal";
 
-
 const FacultyCoursesTable: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,9 +48,10 @@ const FacultyCoursesTable: React.FC = () => {
 
   useEffect(() => {
     if (searchTerm.trim()) {
-      const filtered = courses.filter(course =>
-        course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.courseId.toLowerCase().includes(searchTerm.toLowerCase())
+      const filtered = courses.filter(
+        (course) =>
+          course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          course.courseId.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredCourses(filtered);
     } else {
@@ -72,11 +72,7 @@ const FacultyCoursesTable: React.FC = () => {
     };
 
     const config = statusConfig[status as keyof typeof statusConfig];
-    return (
-      <Badge variant={config.variant}>
-        {config.label}
-      </Badge>
-    );
+    return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
   if (loading) {
@@ -92,9 +88,9 @@ const FacultyCoursesTable: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">My Courses</h2>
           <p className="text-gray-600">
-            You are assigned to {courses.length} course{courses.length !== 1 ? 's' : ''}
+            You are assigned to {courses.length} course
+            {courses.length !== 1 ? "s" : ""}
           </p>
         </div>
       </div>
@@ -134,14 +130,21 @@ const FacultyCoursesTable: React.FC = () => {
             <TableBody>
               {filteredCourses.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                    {courses.length === 0 ? "No courses assigned" : "No courses found"}
+                  <TableCell
+                    colSpan={6}
+                    className="text-center py-8 text-gray-500"
+                  >
+                    {courses.length === 0
+                      ? "No courses assigned"
+                      : "No courses found"}
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredCourses.map((course) => (
                   <TableRow key={course._id}>
-                    <TableCell className="font-medium">{course.courseId}</TableCell>
+                    <TableCell className="font-medium">
+                      {course.courseId}
+                    </TableCell>
                     <TableCell>{course.name}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -150,7 +153,13 @@ const FacultyCoursesTable: React.FC = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className={course.availableSlots > 0 ? "text-green-600" : "text-red-600"}>
+                      <span
+                        className={
+                          course.availableSlots > 0
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
                         {course.availableSlots}
                       </span>
                     </TableCell>

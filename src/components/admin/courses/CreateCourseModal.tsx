@@ -22,6 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { CreateCourseData, FacultyMember } from "@/interfaces/course/course-interface";
 import CourseService from "@/services/course-management-services";
+import { cn } from "@/lib/utils";
 
 interface CreateCourseModalProps {
   isOpen: boolean;
@@ -161,7 +162,7 @@ const CreateCourseModal: React.FC<CreateCourseModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className={cn("!max-w-[30vw] !w-[90vw] max-h-[85vh] overflow-y-auto")}>
         <DialogHeader>
           <DialogTitle>Create New Course</DialogTitle>
         </DialogHeader>

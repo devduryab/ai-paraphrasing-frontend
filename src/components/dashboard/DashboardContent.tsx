@@ -16,6 +16,8 @@ import ChartCard from "./layout/Cards/ChartCard";
 import SimpleBarChart from "./charts/SimpleBarChart";
 import RecentActivityTable from "./tables/RecentActivityTable";
 import StatsCard from "./layout/Cards/StatsCard";
+import AdminDashboardContent from "./AdminDashboardContent";
+import FacultyDashboardContent from "./FacultyDashboardContent";
 
 const DashboardContent: React.FC<DashboardContentProps> = ({ userRole }) => {
   // Role-specific stats configuration
@@ -209,44 +211,39 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ userRole }) => {
 
   return (
     <div className="space-y-6">
-      {/* Stats Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statsConfig.map((stat, index) => (
-          <StatsCard
-            key={index}
-            title={stat.title}
-            value={stat.value}
-            change={stat.change}
-            icon={stat.icon}
-            iconColor={stat.iconColor}
-          />
-        ))}
-      </div>
+      {userRole === "super_admin" ? (
+        <AdminDashboardContent />
+      ) : userRole === "faculty" ? (
+        <FacultyDashboardContent />
+      ) : (
+        <>
+          {/* Keep existing code for student role */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {statsConfig.map((stat, index) => (
+              <StatsCard
+                key={index}
+                title={stat.title}
+                value={stat.value}
+                change={stat.change}
+                icon={stat.icon}
+                iconColor={stat.iconColor}
+              />
+            ))}
+          </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Bar Chart */}
-        <ChartCard
-          title={chartTitles.barChart}
-          subtitle="Monthly overview of performance metrics"
-          className="lg:col-span-1"
-        >
-          <SimpleBarChart />
-        </ChartCard>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ChartCard
+              title={chartTitles.barChart}
+              subtitle="Monthly overview of performance metrics"
+              className="lg:col-span-1"
+            >
+              <SimpleBarChart />
+            </ChartCard>
+          </div>
 
-        {/* Pie Chart */}
-        {/* <ChartCard
-          title={chartTitles.pieChart}
-          subtitle="Distribution breakdown"
-          showTimeFilter={false}
-          className="lg:col-span-1"
-        >
-          <SimplePieChart />
-        </ChartCard> */}
-      </div>
-
-      {/* Recent Activity Table */}
-      <RecentActivityTable title={tableTitle} className="col-span-full" />
+          <RecentActivityTable title={tableTitle} className="col-span-full" />
+        </>
+      )}
     </div>
   );
 };
