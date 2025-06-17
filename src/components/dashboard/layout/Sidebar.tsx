@@ -37,7 +37,11 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
   const roleSpecificItems: Record<string, SidebarItem[]> = {
     student: [
       // { icon: Users, label: "Assignments", href: "/student/assignments" },
-      { icon: BookOpen, label: "Course Registration", href: "/student/courses" },
+      {
+        icon: BookOpen,
+        label: "Course Registration",
+        href: "/student/courses",
+      },
       {
         icon: MessageSquare,
         label: "Submissions",
@@ -48,12 +52,11 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
     faculty: [
       { icon: Users, label: "Students", href: "/faculty/students" },
       { icon: BookOpen, label: "My Courses", href: "/faculty/courses" },
-      // {
-      //   icon: MessageSquare,
-      //   label: "Assignments",
-      //   href: "/faculty/assignments",
-      //   badge: 3,
-      // },
+      {
+        icon: MessageSquare,
+        label: "Assignments",
+        href: "/faculty/assignments",
+      },
       // { icon: TrendingUp, label: "Analytics", href: "/faculty/analytics" },
       // { icon: Target, label: "Reports", href: "/faculty/reports" },
     ],

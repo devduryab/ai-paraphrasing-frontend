@@ -18,7 +18,6 @@ import UserManagementService from "@/services/user-managment-services";
 import { Course } from "@/interfaces/course/course-interface";
 import CourseService from "@/services/course-management-services";
 
-
 const CreateUserModal: React.FC<CreateUserModalProps> = ({
   isOpen,
   onClose,
