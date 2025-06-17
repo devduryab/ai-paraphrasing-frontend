@@ -18,6 +18,7 @@ import RecentActivityTable from "./tables/RecentActivityTable";
 import StatsCard from "./layout/Cards/StatsCard";
 import AdminDashboardContent from "./AdminDashboardContent";
 import FacultyDashboardContent from "./FacultyDashboardContent";
+import StudentDashboardContent from "./StudentDashboardContent";
 
 const DashboardContent: React.FC<DashboardContentProps> = ({ userRole }) => {
   // Role-specific stats configuration
@@ -215,6 +216,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ userRole }) => {
         <AdminDashboardContent />
       ) : userRole === "faculty" ? (
         <FacultyDashboardContent />
+      ) : userRole === "student" ? (
+        <StudentDashboardContent />
       ) : (
         <>
           {/* Keep existing code for student role */}
