@@ -9,7 +9,6 @@ export default function AdminUsersPage() {
       requiredRole="super_admin"
       pageTitle="User Management"
       pageSubtitle="Create and manage faculty and students in the system."
-     
     >
       <UsersTable />
     </DashboardWrapper>

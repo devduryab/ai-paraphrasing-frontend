@@ -9,11 +9,12 @@ import {
   Users,
   MessageSquare,
   TrendingUp,
-  Target,
+  // Target,
   Settings,
   HelpCircle,
   ChevronDown,
   GraduationCap,
+  BookOpen,
 } from "lucide-react";
 import {
   SidebarItem,
@@ -28,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
     {
       icon: BarChart3,
       label: "Dashboard",
-      href: `/${userRole === 'super_admin' ? 'admin' : userRole}/dashboard`,
+      href: `/${userRole === "super_admin" ? "admin" : userRole}/dashboard`,
     },
   ];
 
@@ -45,17 +46,19 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
     ],
     faculty: [
       { icon: Users, label: "Students", href: "/faculty/students" },
-      {
-        icon: MessageSquare,
-        label: "Assignments",
-        href: "/faculty/assignments",
-        badge: 3,
-      },
-      { icon: TrendingUp, label: "Analytics", href: "/faculty/analytics" },
-      { icon: Target, label: "Reports", href: "/faculty/reports" },
+      { icon: BookOpen, label: "My Courses", href: "/faculty/courses" },
+      // {
+      //   icon: MessageSquare,
+      //   label: "Assignments",
+      //   href: "/faculty/assignments",
+      //   badge: 3,
+      // },
+      // { icon: TrendingUp, label: "Analytics", href: "/faculty/analytics" },
+      // { icon: Target, label: "Reports", href: "/faculty/reports" },
     ],
     super_admin: [
       { icon: Users, label: "Users", href: "/admin/users" },
+      { icon: BookOpen, label: "Courses", href: "/admin/courses" },
       // { icon: MessageSquare, label: "System", href: "/admin/system", badge: 2 },
       // { icon: TrendingUp, label: "Analytics", href: "/admin/analytics" },
       // { icon: Target, label: "Reports", href: "/admin/reports" },
@@ -65,8 +68,16 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
   };
 
   const settingsItems: SidebarItem[] = [
-    { icon: Settings, label: "Settings", href: `/${userRole === 'super_admin' ? 'admin' : userRole}/settings` },
-    { icon: HelpCircle, label: "Help Center",  href: `/${userRole === 'super_admin' ? 'admin' : userRole}/help` },
+    {
+      icon: Settings,
+      label: "Settings",
+      href: `/${userRole === "super_admin" ? "admin" : userRole}/settings`,
+    },
+    {
+      icon: HelpCircle,
+      label: "Help Center",
+      href: `/${userRole === "super_admin" ? "admin" : userRole}/help`,
+    },
   ];
 
   const navItems = [
