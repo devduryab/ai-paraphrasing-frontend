@@ -147,15 +147,8 @@ const FacultyAssignmentDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Assignment Management
-          </h1>
-          <p className="text-gray-600">
-            Create and manage assignments for your courses
-          </p>
-        </div>
+      <div className="flex items-end justify-end">
+        
         <Button
           onClick={() => setShowCreateModal(true)}
           className="gap-2"
