@@ -2,17 +2,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  Calendar, 
-  FileText, 
-  Users, 
-  Award, 
-  Clock, 
-  Edit, 
+import {
+  Calendar,
+  FileText,
+  Users,
+  Award,
+  Clock,
+  Edit,
   Download,
   CheckCircle,
   Eye,
-  MessageSquare
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,18 +32,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import AssignmentService from "@/services/assignment-service";
-import { AssignmentWithDetails, SubmissionStatus, SubmissionWithDetails } from "@/interfaces/assignment/assignment-interface";
-
+import {
+  AssignmentWithDetails,
+  SubmissionStatus,
+  SubmissionWithDetails,
+} from "@/interfaces/assignment/assignment-interface";
 
 interface AssignmentDetailsModalProps {
   isOpen: boolean;
@@ -60,7 +58,9 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
 }) => {
   const [submissions, setSubmissions] = useState<SubmissionWithDetails[]>([]);
   const [loading, setLoading] = useState(false);
-  const [gradingSubmissionId, setGradingSubmissionId] = useState<string | null>(null);
+  const [gradingSubmissionId, setGradingSubmissionId] = useState<string | null>(
+    null
+  );
   const [gradeData, setGradeData] = useState({ grade: "", feedback: "" });
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -69,7 +69,9 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
   const fetchSubmissions = async () => {
     try {
       setLoading(true);
-      const submissionsData = await assignmentService.getAssignmentSubmissions(assignment._id);
+      const submissionsData = await assignmentService.getAssignmentSubmissions(
+        assignment._id
+      );
       setSubmissions(submissionsData);
     } catch (error: any) {
       console.error("Error fetching submissions:", error);
@@ -85,33 +87,51 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
   }, [isOpen, assignment._id]);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('en-US', {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Date(dateString).toLocaleString("en-US", {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getDueDateStatus = (dueDate: string) => {
     const now = new Date();
     const due = new Date(dueDate);
-    const diffDays = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.ceil(
+      (due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
 
     if (diffDays < 0) {
-      return { status: "overdue", color: "text-red-600 bg-red-50", label: "Overdue" };
+      return {
+        status: "overdue",
+        color: "text-red-600 bg-red-50",
+        label: "Overdue",
+      };
     } else if (diffDays <= 3) {
-      return { status: "due-soon", color: "text-orange-600 bg-orange-50", label: `${diffDays} days left` };
+      return {
+        status: "due-soon",
+        color: "text-orange-600 bg-orange-50",
+        label: `${diffDays} days left`,
+      };
     } else {
-      return { status: "upcoming", color: "text-green-600 bg-green-50", label: `${diffDays} days left` };
+      return {
+        status: "upcoming",
+        color: "text-green-600 bg-green-50",
+        label: `${diffDays} days left`,
+      };
     }
   };
 
   const getSubmissionStatusBadge = (submission: SubmissionWithDetails) => {
     if (submission.status === SubmissionStatus.GRADED) {
-      return <Badge variant="default" className="bg-green-100 text-green-800">Graded</Badge>;
+      return (
+        <Badge variant="default" className="bg-green-100 text-green-800">
+          Graded
+        </Badge>
+      );
     } else if (submission.isLate) {
       return <Badge variant="destructive">Late</Badge>;
     } else {
@@ -139,7 +159,7 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
 
       // Refresh submissions
       await fetchSubmissions();
-      
+
       // Reset grading form
       setGradingSubmissionId(null);
       setGradeData({ grade: "", feedback: "" });
@@ -164,20 +184,28 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
 
   const getAssignmentTypeLabel = (type: string) => {
     switch (type) {
-      case "text": return "Text Only";
-      case "file_upload": return "File Upload Only";
-      case "both": return "Text + File Upload";
-      default: return type;
+      case "text":
+        return "Text Only";
+      case "file_upload":
+        return "File Upload Only";
+      case "both":
+        return "Text + File Upload";
+      default:
+        return type;
     }
   };
 
   const dueDateStatus = getDueDateStatus(assignment.dueDate);
-  const submissionRate = assignment.submissionCount > 0 ? 
-    Math.round((assignment.gradedCount / assignment.submissionCount) * 100) : 0;
+  const submissionRate =
+    assignment.submissionCount > 0
+      ? Math.round((assignment.gradedCount / assignment.submissionCount) * 100)
+      : 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={cn("!max-w-[50vw] !w-[90vw] max-h-[85vh] overflow-y-auto")}>
+      <DialogContent
+        className={cn("!max-w-[50vw] !w-[90vw] max-h-[85vh] overflow-y-auto")}
+      >
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-2">
@@ -191,7 +219,11 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
           </div>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-4"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="submissions">
@@ -212,8 +244,15 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
                     <Calendar className="w-8 h-8 text-blue-600" />
                     <div>
                       <p className="text-sm text-gray-600">Due Date</p>
-                      <p className="font-medium">{formatDate(assignment.dueDate)}</p>
-                      <p className={cn("text-xs px-2 py-1 rounded", dueDateStatus.color)}>
+                      <p className="font-medium">
+                        {formatDate(assignment.dueDate)}
+                      </p>
+                      <p
+                        className={cn(
+                          "text-xs px-2 py-1 rounded",
+                          dueDateStatus.color
+                        )}
+                      >
                         {dueDateStatus.label}
                       </p>
                     </div>
@@ -227,8 +266,12 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
                     <Award className="w-8 h-8 text-green-600" />
                     <div>
                       <p className="text-sm text-gray-600">Max Score</p>
-                      <p className="text-2xl font-bold text-gray-900">{assignment.maxScore}</p>
-                      <p className="text-xs text-gray-500">{getAssignmentTypeLabel(assignment.assignmentType)}</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {assignment.maxScore}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {getAssignmentTypeLabel(assignment.assignmentType)}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -240,8 +283,12 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
                     <Users className="w-8 h-8 text-purple-600" />
                     <div>
                       <p className="text-sm text-gray-600">Submissions</p>
-                      <p className="text-2xl font-bold text-gray-900">{assignment.submissionCount}</p>
-                      <p className="text-xs text-gray-500">{submissionRate}% graded</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {assignment.submissionCount}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {submissionRate}% graded
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -256,36 +303,56 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label className="text-sm font-medium text-gray-600">Course</Label>
-                    <p className="text-gray-900">{assignment.course.name} ({assignment.course.courseId})</p>
+                    <Label className="text-sm font-medium text-gray-600">
+                      Course
+                    </Label>
+                    <p className="text-gray-900">
+                      {assignment.course.name} ({assignment.course.courseId})
+                    </p>
                   </div>
-                  
+
                   <div>
-                    <Label className="text-sm font-medium text-gray-600">Description</Label>
+                    <Label className="text-sm font-medium text-gray-600">
+                      Description
+                    </Label>
                     <p className="text-gray-900">{assignment.description}</p>
                   </div>
-                  
+
                   {assignment.instructions && (
                     <div>
-                      <Label className="text-sm font-medium text-gray-600">Instructions</Label>
-                      <p className="text-gray-900 whitespace-pre-wrap">{assignment.instructions}</p>
+                      <Label className="text-sm font-medium text-gray-600">
+                        Instructions
+                      </Label>
+                      <p className="text-gray-900 whitespace-pre-wrap">
+                        {assignment.instructions}
+                      </p>
                     </div>
                   )}
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-sm font-medium text-gray-600">Status</Label>
-                      <p className="text-gray-900 capitalize">{assignment.status}</p>
+                      <Label className="text-sm font-medium text-gray-600">
+                        Status
+                      </Label>
+                      <p className="text-gray-900 capitalize">
+                        {assignment.status}
+                      </p>
                     </div>
                     <div>
-                      <Label className="text-sm font-medium text-gray-600">Created</Label>
-                      <p className="text-gray-900">{formatDate(assignment.createdAt)}</p>
+                      <Label className="text-sm font-medium text-gray-600">
+                        Created
+                      </Label>
+                      <p className="text-gray-900">
+                        {formatDate(assignment.createdAt)}
+                      </p>
                     </div>
                   </div>
 
                   {assignment.allowLateSubmission && (
                     <div>
-                      <Label className="text-sm font-medium text-gray-600">Late Submission</Label>
+                      <Label className="text-sm font-medium text-gray-600">
+                        Late Submission
+                      </Label>
                       <p className="text-gray-900">
                         Allowed with {assignment.latePenalty}% penalty per day
                       </p>
@@ -301,27 +368,37 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Total Submissions</span>
-                      <span className="font-medium">{assignment.submissionCount}</span>
+                      <span className="text-sm text-gray-600">
+                        Total Submissions
+                      </span>
+                      <span className="font-medium">
+                        {assignment.submissionCount}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600">Graded</span>
-                      <span className="font-medium text-green-600">{assignment.gradedCount}</span>
+                      <span className="font-medium text-green-600">
+                        {assignment.gradedCount}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Pending Grading</span>
+                      <span className="text-sm text-gray-600">
+                        Pending Grading
+                      </span>
                       <span className="font-medium text-orange-600">
                         {assignment.submissionCount - assignment.gradedCount}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Grading Progress</span>
+                      <span className="text-sm text-gray-600">
+                        Grading Progress
+                      </span>
                       <span className="font-medium">{submissionRate}%</span>
                     </div>
-                    
+
                     {/* Progress Bar */}
                     <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div 
+                      <div
                         className="bg-green-600 h-3 rounded-full transition-all duration-300"
                         style={{ width: `${submissionRate}%` }}
                       ></div>
@@ -379,23 +456,34 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
                               <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                                   <span className="text-blue-600 font-medium text-sm">
-                                    {submission.student.profile.firstName.charAt(0)}
-                                    {submission.student.profile.lastName.charAt(0)}
+                                    {submission.student.profile.firstName.charAt(
+                                      0
+                                    )}
+                                    {submission.student.profile.lastName.charAt(
+                                      0
+                                    )}
                                   </span>
                                 </div>
                                 <div>
                                   <p className="font-medium">
-                                    {submission.student.profile.firstName} {submission.student.profile.lastName}
+                                    {submission.student.profile.firstName}{" "}
+                                    {submission.student.profile.lastName}
                                   </p>
-                                  <p className="text-sm text-gray-600">{submission.student.email}</p>
+                                  <p className="text-sm text-gray-600">
+                                    {submission.student.email}
+                                  </p>
                                 </div>
                               </div>
                             </TableCell>
                             <TableCell>
                               <div>
-                                <p className="text-sm">{formatDate(submission.submittedAt)}</p>
+                                <p className="text-sm">
+                                  {formatDate(submission.submittedAt)}
+                                </p>
                                 {submission.isLate && (
-                                  <p className="text-xs text-red-600">Late submission</p>
+                                  <p className="text-xs text-red-600">
+                                    Late submission
+                                  </p>
                                 )}
                               </div>
                             </TableCell>
@@ -409,25 +497,27 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
                                     {submission.grade}/{assignment.maxScore}
                                   </p>
                                   <p className="text-xs text-gray-600">
-                                    {Math.round((submission.grade / assignment.maxScore) * 100)}%
+                                    {Math.round(
+                                      (submission.grade / assignment.maxScore) *
+                                        100
+                                    )}
+                                    %
                                   </p>
                                 </div>
                               ) : (
-                                <span className="text-gray-400">Not graded</span>
+                                <span className="text-gray-400">
+                                  Not graded
+                                </span>
                               )}
                             </TableCell>
                             <TableCell>
-                              <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="sm">
-                                  <Eye className="w-4 h-4" />
-                                </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  onClick={() => startGrading(submission)}
-                                >
-                                  <Edit className="w-4 h-4" />
-                                </Button>
+                              <div
+                                className="flex items-center gap-2"
+                                onClick={() => startGrading(submission)}
+                              >
+                                <Eye className="w-4 h-4" />
+
+                                <Edit className="w-4 h-4" />
                               </div>
                             </TableCell>
                           </TableRow>
@@ -452,14 +542,21 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
                   {gradingSubmissionId ? (
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="grade">Grade (out of {assignment.maxScore})</Label>
+                        <Label htmlFor="grade">
+                          Grade (out of {assignment.maxScore})
+                        </Label>
                         <Input
                           id="grade"
                           type="number"
                           min="0"
                           max={assignment.maxScore}
                           value={gradeData.grade}
-                          onChange={(e) => setGradeData(prev => ({ ...prev, grade: e.target.value }))}
+                          onChange={(e) =>
+                            setGradeData((prev) => ({
+                              ...prev,
+                              grade: e.target.value,
+                            }))
+                          }
                           placeholder="Enter grade"
                         />
                       </div>
@@ -468,19 +565,30 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
                         <Textarea
                           id="feedback"
                           value={gradeData.feedback}
-                          onChange={(e) => setGradeData(prev => ({ ...prev, feedback: e.target.value }))}
+                          onChange={(e) =>
+                            setGradeData((prev) => ({
+                              ...prev,
+                              feedback: e.target.value,
+                            }))
+                          }
                           placeholder="Provide feedback to the student..."
                           rows={4}
                         />
                       </div>
                       <div className="flex gap-2">
-                        <Button 
-                          onClick={() => handleGradeSubmission(gradingSubmissionId)}
+                        <Button
+                          onClick={() =>
+                            handleGradeSubmission(gradingSubmissionId)
+                          }
                           size="sm"
                         >
                           Save Grade
                         </Button>
-                        <Button variant="outline" size="sm" onClick={cancelGrading}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={cancelGrading}
+                        >
                           Cancel
                         </Button>
                       </div>
@@ -503,7 +611,9 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-4 bg-green-50 rounded-lg">
                       <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                      <p className="text-2xl font-bold text-green-600">{assignment.gradedCount}</p>
+                      <p className="text-2xl font-bold text-green-600">
+                        {assignment.gradedCount}
+                      </p>
                       <p className="text-sm text-gray-600">Graded</p>
                     </div>
                     <div className="text-center p-4 bg-orange-50 rounded-lg">
@@ -522,16 +632,17 @@ const AssignmentDetailsModal: React.FC<AssignmentDetailsModalProps> = ({
                       </Label>
                       <div className="mt-2 space-y-2">
                         {submissions
-                          .filter(s => s.status !== SubmissionStatus.GRADED)
+                          .filter((s) => s.status !== SubmissionStatus.GRADED)
                           .slice(0, 5)
                           .map((submission) => (
-                            <div 
+                            <div
                               key={submission._id}
                               className="flex items-center justify-between p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100"
                               onClick={() => startGrading(submission)}
                             >
                               <span className="text-sm">
-                                {submission.student.profile.firstName} {submission.student.profile.lastName}
+                                {submission.student.profile.firstName}{" "}
+                                {submission.student.profile.lastName}
                               </span>
                               <Button variant="ghost" size="sm">
                                 <Edit className="w-3 h-3" />

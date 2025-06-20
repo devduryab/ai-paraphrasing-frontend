@@ -50,6 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
     ],
     faculty: [
       { icon: Users, label: "Students", href: "/faculty/students" },
+      { icon: Users, label: "Analysis", href: "/faculty/analysis" },
       { icon: BookOpen, label: "My Courses", href: "/faculty/courses" },
       {
         icon: MessageSquare,

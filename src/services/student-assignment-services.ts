@@ -2,7 +2,6 @@
 import {
   Assignment,
   StudentSubmission,
-  CreateSubmissionData,
   StudentAnalytics,
 } from "@/interfaces/assignment/assignment-interface";
 
@@ -95,15 +94,18 @@ class StudentAssignmentService {
 
   // Submit assignment
   public async createSubmission(
-    submissionData: CreateSubmissionData
-  ): Promise<StudentSubmission> {
+    formData: FormData
+  ): Promise<{ success: boolean; data?: any; error?: string }> {
     try {
       const response = await fetch(
         `${this.baseURL}/api/assignments/submissions`,
         {
           method: "POST",
-          headers: this.getAuthHeaders(),
-          body: JSON.stringify(submissionData),
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            // Don't set Content-Type for FormData - let browser set it
+          },
+          body: formData,
         }
       );
 
@@ -113,10 +115,10 @@ class StudentAssignmentService {
         throw new Error(data.message || "Failed to submit assignment");
       }
 
-      return data.data?.submission;
+      return { success: true, data: data.data?.submission };
     } catch (error: any) {
       console.error("Error submitting assignment:", error);
-      throw new Error(error.message || "Failed to submit assignment");
+      return { success: false, error: error.message };
     }
   }
 

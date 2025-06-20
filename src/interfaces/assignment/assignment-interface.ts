@@ -1,7 +1,42 @@
+import {
+  AnalysisResult,
+  AnalysisStatus,
+  IntegrityRisk,
+} from "../analysis/analysis-interface";
+
 export enum AssignmentType {
   TEXT = "text",
   FILE_UPLOAD = "file_upload",
   BOTH = "both",
+}
+
+// Add this interface to your assignment-interface.ts file
+
+export interface SubmissionWithAnalysis extends Submission {
+  analysis?: {
+    status: AnalysisStatus;
+    results: AnalysisResult[];
+    summary?: {
+      overallRisk: IntegrityRisk;
+      confidence: number;
+      isParaphrased: boolean;
+      flaggedSections: number;
+    };
+  };
+  student?: {
+    _id: string;
+    profile: {
+      firstName: string;
+      lastName: string;
+    };
+    email: string;
+  };
+  assignment?: {
+    _id: string;
+    title: string;
+    maxScore: number;
+    dueDate: string;
+  };
 }
 
 export enum AssignmentStatus {
@@ -218,7 +253,6 @@ export interface StudentAssignmentAnalytics {
   upcomingDeadlines: Assignment[];
   recentSubmissions: StudentSubmission[];
 }
-
 
 export interface AssignmentSettings {
   allowMultipleSubmissions: boolean;
