@@ -1,26 +1,58 @@
+// components/student/dashboard/StudentDashboardContent.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   BookOpen,
   Clock,
   CheckCircle,
   AlertCircle,
+  TrendingUp,
   Calendar,
   FileText,
   Eye,
   Upload,
   ArrowRight,
-} from "lucide-react";
-import Link from "next/link";
-import {
-  Assignment,
-  StudentSubmission,
-} from "@/interfaces/assignment/assignment-interface";
-import StudentAssignmentService from "@/services/student-assignment-services";
+} from 'lucide-react';
+import Link from 'next/link';
+import { Assignment, StudentAnalytics } from '@/interfaces/assignment/assignment-interface';
+import StudentAssignmentService from '@/services/student-assignment-services';
+
+interface QuickStatsCardProps {
+  title: string;
+  value: number;
+  icon: React.ElementType;
+  color: string;
+  subtitle?: string;
+  onClick?: () => void;
+}
+
+const QuickStatsCard: React.FC<QuickStatsCardProps> = ({ 
+  title, 
+  value, 
+  icon: Icon, 
+  color, 
+  subtitle, 
+  onClick 
+}) => (
+  <Card className={`hover:shadow-md transition-shadow ${onClick ? 'cursor-pointer' : ''}`} onClick={onClick}>
+    <CardContent className="p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-gray-600">{title}</p>
+          <p className="text-2xl font-bold">{value}</p>
+          {subtitle && <p className="text-xs text-gray-500 mt-1">{subtitle}</p>}
+        </div>
+        <div className={`p-3 rounded-full ${color}`}>
+          <Icon className="w-6 h-6 text-white" />
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
 
 interface UpcomingAssignmentCardProps {
   assignment: Assignment;
@@ -39,15 +71,12 @@ const UpcomingAssignmentCard: React.FC<UpcomingAssignmentCardProps> = ({
   const hasSubmission = assignment.mySubmission;
 
   const getPriorityColor = () => {
-    const daysLeft = Math.ceil(
-      (new Date(assignment.dueDate).getTime() - new Date().getTime()) /
-        (1000 * 60 * 60 * 24)
-    );
-
-    if (isOverdue) return "border-red-500 bg-red-50";
-    if (daysLeft <= 1) return "border-orange-500 bg-orange-50";
-    if (daysLeft <= 3) return "border-yellow-500 bg-yellow-50";
-    return "border-gray-200 bg-white";
+    const daysLeft = Math.ceil((new Date(assignment.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (isOverdue) return 'border-red-500 bg-red-50';
+    if (daysLeft <= 1) return 'border-orange-500 bg-orange-50';
+    if (daysLeft <= 3) return 'border-yellow-500 bg-yellow-50';
+    return 'border-gray-200 bg-white';
   };
 
   return (
@@ -56,20 +85,12 @@ const UpcomingAssignmentCard: React.FC<UpcomingAssignmentCardProps> = ({
         <div className="flex justify-between items-start mb-3">
           <div className="flex-1">
             <h4 className="font-semibold text-sm mb-1">{assignment.title}</h4>
-            <p className="text-xs text-gray-600 mb-1">
-              {typeof assignment.courseId === "object"
-                ? assignment.courseId.name
-                : assignment.courseId || "Unknown Course"}
-            </p>
+            <p className="text-xs text-gray-600 mb-1">{assignment.status}</p>
           </div>
           <div className="text-right">
             {hasSubmission ? (
-              <Badge
-                className={service.getSubmissionStatusColor(
-                  hasSubmission.status
-                )}
-              >
-                {hasSubmission.status.replace("_", " ")}
+              <Badge className={service.getSubmissionStatusColor(hasSubmission.status)}>
+                {hasSubmission.status.replace('_', ' ')}
               </Badge>
             ) : isOverdue ? (
               <Badge className="bg-red-100 text-red-800">Overdue</Badge>
@@ -82,15 +103,9 @@ const UpcomingAssignmentCard: React.FC<UpcomingAssignmentCardProps> = ({
         <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
           <div className="flex items-center space-x-1">
             <Calendar className="w-3 h-3" />
-            <span>
-              Due: {new Date(assignment.dueDate).toLocaleDateString()}
-            </span>
+            <span>Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
           </div>
-          <div
-            className={`flex items-center space-x-1 ${
-              isOverdue ? "text-red-600" : "text-blue-600"
-            }`}
-          >
+          <div className={`flex items-center space-x-1 ${isOverdue ? 'text-red-600' : 'text-blue-600'}`}>
             <Clock className="w-3 h-3" />
             <span>{timeLeft}</span>
           </div>
@@ -106,7 +121,7 @@ const UpcomingAssignmentCard: React.FC<UpcomingAssignmentCardProps> = ({
             <Eye className="w-3 h-3 mr-1" />
             View
           </Button>
-
+          
           {!hasSubmission && (
             <Button
               size="sm"
@@ -125,12 +140,10 @@ const UpcomingAssignmentCard: React.FC<UpcomingAssignmentCardProps> = ({
 };
 
 interface RecentSubmissionCardProps {
-  submission: StudentSubmission;
+  submission: any; // StudentSubmission type
 }
 
-const RecentSubmissionCard: React.FC<RecentSubmissionCardProps> = ({
-  submission,
-}) => {
+const RecentSubmissionCard: React.FC<RecentSubmissionCardProps> = ({ submission }) => {
   const service = StudentAssignmentService.getInstance();
 
   return (
@@ -138,17 +151,13 @@ const RecentSubmissionCard: React.FC<RecentSubmissionCardProps> = ({
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-2">
           <div className="flex-1">
-            <h4 className="font-semibold text-sm mb-1">
-              {submission.assignment?.title || "Unknown Assignment"}
-            </h4>
+            <h4 className="font-semibold text-sm mb-1">{submission.assignment?.title || 'Unknown Assignment'}</h4>
             <p className="text-xs text-gray-500">
               Submitted: {new Date(submission.submittedAt).toLocaleDateString()}
             </p>
           </div>
-          <Badge
-            className={service.getSubmissionStatusColor(submission.status)}
-          >
-            {submission.status.replace("_", " ")}
+          <Badge className={service.getSubmissionStatusColor(submission.status)}>
+            {submission.status.replace('_', ' ')}
           </Badge>
         </div>
 
@@ -156,10 +165,7 @@ const RecentSubmissionCard: React.FC<RecentSubmissionCardProps> = ({
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600">Grade:</span>
             <span className="font-semibold">
-              {service.formatGrade(
-                submission.grade,
-                submission.assignment.maxScore
-              )}
+              {service.formatGrade(submission.grade, submission.assignment.maxScore)}
             </span>
           </div>
         )}
@@ -178,15 +184,12 @@ const RecentSubmissionCard: React.FC<RecentSubmissionCardProps> = ({
 };
 
 const StudentDashboardContent: React.FC = () => {
-  const [upcomingAssignments, setUpcomingAssignments] = useState<Assignment[]>(
-    []
-  );
-  const [recentSubmissions, setRecentSubmissions] = useState<
-    StudentSubmission[]
-  >([]);
+  const [analytics, setAnalytics] = useState<StudentAnalytics | null>(null);
+  const [upcomingAssignments, setUpcomingAssignments] = useState<Assignment[]>([]);
+  const [recentSubmissions, setRecentSubmissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const assignmentService = StudentAssignmentService.getInstance();
+  const service = StudentAssignmentService.getInstance();
 
   useEffect(() => {
     loadDashboardData();
@@ -195,43 +198,43 @@ const StudentDashboardContent: React.FC = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-
+      
+      // Load analytics
+      const analyticsData = await service.getStudentAnalytics();
+      setAnalytics(analyticsData);
+      
       // Load upcoming assignments (next 5)
-      const assignments = await assignmentService.getStudentAssignments({
-        status: "active",
-      });
+      const assignments = await service.getStudentAssignments({ status: 'active' });
       const upcoming = assignments
-        .filter((a) => !a.mySubmission || a.mySubmission.status !== "graded")
-        .sort(
-          (a, b) =>
-            new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-        )
+        .filter(a => !a.mySubmission || a.mySubmission.status !== 'graded')
+        .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
         .slice(0, 5);
       setUpcomingAssignments(upcoming);
-
+      
       // Load recent submissions (last 3)
-      const submissions = await assignmentService.getMySubmissions();
+      const submissions = await service.getMySubmissions();
       const recent = submissions
-        .sort(
-          (a, b) =>
-            new Date(b.submittedAt).getTime() -
-            new Date(a.submittedAt).getTime()
-        )
+        .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
         .slice(0, 3);
       setRecentSubmissions(recent);
+      
     } catch (error) {
-      console.error("Error loading dashboard data:", error);
+      console.error('Error loading dashboard data:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleViewAssignmentDetails = (assignment: Assignment) => {
-    window.location.href = "/student/assignments";
+    // This would open the assignment details modal
+    // For now, navigate to assignments page
+    window.location.href = '/student/assignments';
   };
 
   const handleSubmitAssignment = (assignment: Assignment) => {
-    window.location.href = "/student/assignments";
+    // This would open the submission modal
+    // For now, navigate to assignments page
+    window.location.href = '/student/assignments';
   };
 
   if (loading) {
@@ -247,19 +250,44 @@ const StudentDashboardContent: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Welcome Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-gray-900">
-            Welcome to Your Dashboard
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-gray-600">
-            Stay on top of your assignments and track your academic progress.
-          </p>
-        </CardContent>
-      </Card>
+      {/* Quick Stats */}
+      {analytics && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Link href="/student/assignments">
+            <QuickStatsCard
+              title="Total Assignments"
+              value={analytics.totalAssignments}
+              icon={BookOpen}
+              color="bg-blue-500"
+            />
+          </Link>
+          
+          <Link href="/student/submissions">
+            <QuickStatsCard
+              title="Submitted"
+              value={analytics.submittedAssignments}
+              icon={CheckCircle}
+              color="bg-green-500"
+            />
+          </Link>
+          
+          <QuickStatsCard
+            title="Pending"
+            value={analytics.pendingAssignments}
+            icon={Clock}
+            color="bg-yellow-500"
+            onClick={() => window.location.href = '/student/assignments'}
+          />
+          
+          <QuickStatsCard
+            title="Average Grade"
+            value={Math.round(analytics.averageGrade)}
+            icon={TrendingUp}
+            color="bg-purple-500"
+            subtitle={analytics.averageGrade > 0 ? `${analytics.averageGrade.toFixed(1)}%` : 'No grades yet'}
+          />
+        </div>
+      )}
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -272,11 +300,7 @@ const StudentDashboardContent: React.FC = () => {
                 <span>Upcoming Assignments</span>
               </CardTitle>
               <Link href="/student/assignments">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center space-x-1"
-                >
+                <Button variant="outline" size="sm" className="flex items-center space-x-1">
                   <span>View All</span>
                   <ArrowRight className="w-4 h-4" />
                 </Button>
@@ -287,12 +311,8 @@ const StudentDashboardContent: React.FC = () => {
             {upcomingAssignments.length === 0 ? (
               <div className="text-center py-8">
                 <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  All Caught Up!
-                </h3>
-                <p className="text-gray-500">
-                  You don&apos;t have any pending assignments.
-                </p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">All Caught Up!</h3>
+                <p className="text-gray-500">You don&apos;t have any pending assignments.</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -318,11 +338,7 @@ const StudentDashboardContent: React.FC = () => {
                 <span>Recent Submissions</span>
               </CardTitle>
               <Link href="/student/submissions">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center space-x-1"
-                >
+                <Button variant="outline" size="sm" className="flex items-center space-x-1">
                   <span>View All</span>
                   <ArrowRight className="w-4 h-4" />
                 </Button>
@@ -333,14 +349,12 @@ const StudentDashboardContent: React.FC = () => {
             {recentSubmissions.length === 0 ? (
               <div className="text-center py-8">
                 <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  No Submissions Yet
-                </h3>
-                <p className="text-gray-500">
-                  Start by submitting your first assignment!
-                </p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No Submissions Yet</h3>
+                <p className="text-gray-500">Start by submitting your first assignment!</p>
                 <Link href="/student/assignments">
-                  <Button className="mt-4">View Assignments</Button>
+                  <Button className="mt-4">
+                    View Assignments
+                  </Button>
                 </Link>
               </div>
             ) : (
@@ -357,6 +371,42 @@ const StudentDashboardContent: React.FC = () => {
         </Card>
       </div>
 
+      {/* Performance Overview */}
+      {analytics && analytics.averageGrade > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <TrendingUp className="w-5 h-5 text-purple-500" />
+              <span>Performance Overview</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-purple-600 mb-2">
+                  {analytics.averageGrade.toFixed(1)}%
+                </div>
+                <p className="text-gray-600">Overall Average</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="text-3xl font-bold text-green-600 mb-2">
+                  {Math.round((analytics.submittedAssignments / analytics.totalAssignments) * 100)}%
+                </div>
+                <p className="text-gray-600">Completion Rate</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-600 mb-2">
+                  {analytics.gradedAssignments}
+                </div>
+                <p className="text-gray-600">Graded Assignments</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Quick Actions */}
       <Card>
         <CardHeader>
@@ -365,30 +415,21 @@ const StudentDashboardContent: React.FC = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link href="/student/assignments">
-              <Button
-                variant="outline"
-                className="w-full flex items-center space-x-2"
-              >
+              <Button variant="outline" className="w-full flex items-center space-x-2">
                 <BookOpen className="w-4 h-4" />
                 <span>View All Assignments</span>
               </Button>
             </Link>
-
+            
             <Link href="/student/submissions">
-              <Button
-                variant="outline"
-                className="w-full flex items-center space-x-2"
-              >
+              <Button variant="outline" className="w-full flex items-center space-x-2">
                 <FileText className="w-4 h-4" />
                 <span>My Submissions</span>
               </Button>
             </Link>
-
+            
             <Link href="/student/courses">
-              <Button
-                variant="outline"
-                className="w-full flex items-center space-x-2"
-              >
+              <Button variant="outline" className="w-full flex items-center space-x-2">
                 <CheckCircle className="w-4 h-4" />
                 <span>Enroll in Courses</span>
               </Button>

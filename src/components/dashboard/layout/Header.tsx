@@ -70,9 +70,7 @@ const Header: React.FC<HeaderProps> = ({
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Help</DropdownMenuItem>
+             
               <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout

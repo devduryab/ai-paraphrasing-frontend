@@ -1,3 +1,4 @@
+import { Assignment, StudentSubmission } from "@/interfaces/assignment/assignment-interface";
 import { Course } from "@/interfaces/course/course-interface";
 import { UserListItem } from "@/interfaces/user-managment-interface";
 
@@ -91,4 +92,17 @@ export interface FacultyOverviewData {
   facultyName: string;
   coursesCount: number;
   email: string;
+}
+
+
+
+// In your assignment-interface.ts file, add:
+export interface StudentAssignmentAnalytics {
+  totalAssignments: number;
+  submittedAssignments: number;
+  pendingAssignments: number;
+  gradedAssignments: number;
+  averageGrade: number;
+  upcomingDeadlines: Assignment[];
+  recentSubmissions: StudentSubmission[];
 }

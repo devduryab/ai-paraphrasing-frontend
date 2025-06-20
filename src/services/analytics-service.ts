@@ -6,6 +6,7 @@ import {
   GrowthData,
   RecentEnrollmentData,
   StudentAnalytics,
+  StudentAssignmentAnalytics,
 } from "@/interfaces/Admin/analytics/AdminDashboardAnalytics";
 import CourseService from "./course-management-services";
 import UserManagementService from "./user-managment-services";
@@ -82,7 +83,7 @@ class AnalyticsService {
   }
 
   // Student Analytics
-  async getStudentAnalytics(): Promise<StudentAnalytics> {
+  async getStudentAnalytics(): Promise<StudentAssignmentAnalytics> {
     try {
       const response = await fetch(`${this.baseUrl}/api/analytics/student`, {
         headers: this.getAuthHeaders(),

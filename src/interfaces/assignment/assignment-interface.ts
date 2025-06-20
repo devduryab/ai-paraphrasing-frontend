@@ -1,21 +1,20 @@
-
 export enum AssignmentType {
   TEXT = "text",
   FILE_UPLOAD = "file_upload",
-  BOTH = "both"
+  BOTH = "both",
 }
 
 export enum AssignmentStatus {
   DRAFT = "draft",
   ACTIVE = "active",
-  ARCHIVED = "archived"
+  ARCHIVED = "archived",
 }
 
 export enum SubmissionStatus {
   NOT_SUBMITTED = "not_submitted",
   SUBMITTED = "submitted",
   LATE = "late",
-  GRADED = "graded"
+  GRADED = "graded",
 }
 
 export interface Assignment {
@@ -23,7 +22,13 @@ export interface Assignment {
   title: string;
   description: string;
   instructions?: string;
-  courseId: string;
+  courseId:
+    | string
+    | {
+        _id: string;
+        name: string;
+        courseId: string;
+      };
   facultyId: string;
   assignmentType: AssignmentType;
   maxScore: number;
@@ -34,6 +39,8 @@ export interface Assignment {
   status: AssignmentStatus;
   createdAt: string;
   updatedAt: string;
+  mySubmission?: StudentSubmission;
+  settings?: AssignmentSettings;
 }
 
 export interface AssignmentWithDetails extends Assignment {
@@ -163,4 +170,62 @@ export interface ApiResponse<T> {
   status: "success" | "error";
   message: string;
   data?: T;
+}
+
+export interface StudentSubmission {
+  _id: string;
+  assignmentId: string;
+  studentId: string;
+  submissionText?: string;
+  submissionFiles?: string[];
+  submittedAt: string;
+  isLate: boolean;
+  grade?: number;
+  feedback?: string;
+  status: "not_submitted" | "submitted" | "late" | "graded";
+  createdAt: string;
+  updatedAt: string;
+  assignment?: {
+    _id: string;
+    title: string;
+    maxScore: number;
+    dueDate: string;
+  };
+}
+
+export interface StudentAnalytics {
+  totalAssignments: number;
+  submittedAssignments: number;
+  pendingAssignments: number;
+  gradedAssignments: number;
+  overdueAssignments: number;
+  averageGrade: number;
+  upcomingDeadlines: Assignment[];
+  recentSubmissions: StudentSubmission[];
+
+  totalAnalyzed?: number;
+  flaggedSubmissions?: number;
+  averageIntegrityScore?: number;
+  paraphrasingIncidents?: number;
+}
+
+export interface StudentAssignmentAnalytics {
+  totalAssignments: number;
+  submittedAssignments: number;
+  pendingAssignments: number;
+  gradedAssignments: number;
+  averageGrade: number;
+  upcomingDeadlines: Assignment[];
+  recentSubmissions: StudentSubmission[];
+}
+
+
+export interface AssignmentSettings {
+  allowMultipleSubmissions: boolean;
+  showScoreToStudents: boolean;
+  enablePeerReview: boolean;
+  autoGrading: boolean;
+  plagiarismCheck: boolean;
+  aiAnalysisEnabled: boolean;
+  analysisTypes: string[];
 }

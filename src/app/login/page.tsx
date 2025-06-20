@@ -104,12 +104,7 @@ export default function LoginPage() {
 
         {/* Login Form */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Debug Info */}
-          <div className="mb-4 p-2 bg-gray-100 rounded text-xs text-black">
-            <p>Backend URL: {process.env.NEXT_PUBLIC_BACKEND_URL}</p>
-            <p>Authenticated: {isAuthenticated ? "Yes" : "No"}</p>
-            <p>User Role: {user?.role || "None"}</p>
-          </div>
+        
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Input */}

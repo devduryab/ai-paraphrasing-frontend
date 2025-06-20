@@ -10,8 +10,7 @@ import {
   MessageSquare,
   TrendingUp,
   // Target,
-  Settings,
-  HelpCircle,
+
   ChevronDown,
   GraduationCap,
   BookOpen,
@@ -36,7 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
   // Role-specific navigation items
   const roleSpecificItems: Record<string, SidebarItem[]> = {
     student: [
-      // { icon: Users, label: "Assignments", href: "/student/assignments" },
+      { icon: Users, label: "Assignments", href: "/student/assignments" },
       {
         icon: BookOpen,
         label: "Course Registration",
@@ -71,23 +70,11 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
     ],
   };
 
-  const settingsItems: SidebarItem[] = [
-    {
-      icon: Settings,
-      label: "Settings",
-      href: `/${userRole === "super_admin" ? "admin" : userRole}/settings`,
-    },
-    {
-      icon: HelpCircle,
-      label: "Help Center",
-      href: `/${userRole === "super_admin" ? "admin" : userRole}/help`,
-    },
-  ];
 
   const navItems = [
     ...baseNavItems,
     ...roleSpecificItems[userRole],
-    ...settingsItems,
+
   ];
 
   return (
